@@ -1,10 +1,10 @@
 import 'dart:convert';
 
+import 'package:connectivity/connectivity.dart';
 import 'package:exam/Models/game.dart';
 import 'package:exam/Providers/client_provider.dart';
 import 'package:exam/Widgets/drawer.dart';
 import 'package:exam/Widgets/game_simple_widget.dart';
-import 'package:exam/dialogs/custom_snack.dart';
 import 'package:exam/dialogs/id_dialog.dart';
 import 'package:exam/dialogs/id_quantity_dialog.dart';
 import 'package:flutter/material.dart';
@@ -22,23 +22,43 @@ class ClientScreen extends StatefulWidget {
 }
 
 class _ClientScreenState extends State<ClientScreen> {
-  var channel = IOWebSocketChannel.connect("ws://10.0.2.2:4001");
+  var channel;
   ProgressDialog pr;
   var _scaffoldKey = new GlobalKey<ScaffoldState>();
+  var subscription;
   @override
   void initState() {
     final provider = Provider.of<ClientProvider>(context, listen: false);
     provider.changeModified();
     super.initState();
-    channel.stream.listen((message) {
-      provider.addGameLocally(Game.fromJson(jsonDecode(message)));
-    });
+    if (provider.isOnline) {
+      channel = IOWebSocketChannel.connect("ws://10.0.2.2:4001")
+        ..stream.listen((message) {
+          provider.addGameLocally(Game.fromJson(jsonDecode(message)));
+        });
+    }
+
     pr = new ProgressDialog(
       context,
       type: ProgressDialogType.Normal,
       isDismissible: false,
       showLogs: true,
     );
+
+    subscription = Connectivity()
+        .onConnectivityChanged
+        .listen((ConnectivityResult result) {
+      if (result == ConnectivityResult.none) {
+        if (channel is IOWebSocketChannel) channel.sink.close();
+        provider.changeInternetStatus(false);
+      } else {
+        channel = IOWebSocketChannel.connect("ws://10.0.2.2:4001")
+          ..stream.listen((message) {
+            provider.addGameLocally(Game.fromJson(jsonDecode(message)));
+          });
+        provider.changeInternetStatus(true);
+      }
+    });
   }
 
   Widget getAvalible(BuildContext context) {
@@ -114,6 +134,7 @@ class _ClientScreenState extends State<ClientScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final provider = Provider.of<ClientProvider>(context, listen: true);
     return Scaffold(
       key: _scaffoldKey,
       drawer: OurDrawer(),
@@ -124,7 +145,9 @@ class _ClientScreenState extends State<ClientScreen> {
         ],
       ),
       body: Container(
-        child: getAvalible(context),
+        child: provider.isOnline
+            ? getAvalible(context)
+            : Center(child: Text("You are offline!")),
       ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.monetization_on),
@@ -135,7 +158,8 @@ class _ClientScreenState extends State<ClientScreen> {
 
   @override
   void dispose() {
-    channel.sink.close();
+    subscription.cancel();
+    if (channel is IOWebSocketChannel) channel.sink.close();
     super.dispose();
   }
 }

@@ -11,7 +11,7 @@ final String beginLog = "ClientProvider ";
 class ClientProvider extends ChangeNotifier {
   ClientRepository repo = ClientRepository();
   DbClientRepo dbRepo = DbClientRepo();
-  bool isOnline = true;
+  bool isOnline = false;
   bool modified = true;
   List<Game> locGame = [];
 

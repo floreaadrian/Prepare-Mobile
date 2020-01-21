@@ -1,8 +1,6 @@
 import 'dart:async';
 
 import 'package:exam/Models/game.dart';
-import 'package:exam/Repository/client_repository.dart';
-import 'package:exam/Repository/db_client_repo.dart';
 import 'package:exam/Repository/employee_repository.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +9,7 @@ final String beginLog = "EmployeeProvider ";
 
 class EmployeeProvider extends ChangeNotifier {
   EmployeeRepository repo = EmployeeRepository();
-  bool isOnline = true;
+  bool isOnline = false;
   bool modified = true;
   List<Game> locGame = [];
 
