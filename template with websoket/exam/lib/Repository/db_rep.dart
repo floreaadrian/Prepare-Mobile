@@ -8,19 +8,24 @@ class DBRep {
   var logger = Logger();
 
   Future<Item> addItem(Item item) async {
-    final sql = '''INSERT INTO ${DBCreator.itemTable} 
+    logger.i("trying to add item to db");
+    final sql = '''INSERT INTO ${DBCreator.itemTable}
     (
       ${DBCreator.id},
-      ${DBCreator.name},
-    ${DBCreator.desc},
-    ${DBCreator.size}
+      ${DBCreator.details},
+    ${DBCreator.status},
+    ${DBCreator.user},
+    ${DBCreator.age},
+    ${DBCreator.type}
     )
     VALUES
     (
       ${item.id},
-      "${item.name}",
-      "${item.desc}",
-      ${item.size}
+      "${item.details}",
+      "${item.status}",
+      ${item.user},
+      ${item.age},
+      "${item.type}"
     )
     ''';
     try {
@@ -28,6 +33,31 @@ class DBRep {
       logger.i("DB: added ${item.id.toString()}");
     } catch (e) {}
     return item;
+  }
+
+  Future<int> addId(int id) async {
+    logger.i("trying to add item to db");
+    final sql = '''INSERT INTO ${DBCreator.subTable}
+    (
+      ${DBCreator.user},
+    )
+    VALUES
+    (
+      $id,
+    )
+    ''';
+    try {
+      await db.rawInsert(sql);
+      logger.i("DB: user id added $id");
+    } catch (e) {}
+    return id;
+  }
+
+  Future<int> getId() async {
+    final sql = '''SELECT * FROM ${DBCreator.subTable}''';
+    final data = await db.rawQuery(sql);
+    logger.e(data);
+    return 0;
   }
 
   Future<List<Item>> getAllItems() async {
@@ -42,66 +72,9 @@ class DBRep {
     return list;
   }
 
-  Future<void> updateItem(Item oldItem, Item newItem) async {
-    final sql = '''UPDATE ${DBCreator.itemTable}
-    SET ${DBCreator.name} = "${newItem.name}",
-    ${DBCreator.desc} = "${newItem.desc}",
-    ${DBCreator.size} = ${newItem.size}
-    WHERE ${DBCreator.id} = ${oldItem.id}''';
-
-    await db.rawUpdate(sql);
-    logger.i("DB: update");
-  }
-
-  Future<void> deleteItem(Item item) async {
-    final sql =
-        '''DELETE FROM ${DBCreator.itemTable} WHERE ${DBCreator.id} = ${item.id}''';
-    await db.rawDelete(sql);
-    logger.i("DB: deleted ${item.id.toString()}");
-  }
-
   Future<void> deleteAllItems() async {
     final sql = '''DELETE FROM ${DBCreator.itemTable}''';
     await db.rawDelete(sql);
     logger.i("DB: deleted all items");
-  }
-
-  /*______________________________________________*/
-
-  Future<String> add(String name) async {
-    final sql = '''INSERT INTO ${DBCreator.subTable} 
-    (${DBCreator.name})
-    VALUES
-    ("$name")
-    ''';
-    try {
-      await db.rawInsert(sql);
-      logger.i("DB: added $name");
-    } catch (e) {}
-    return name;
-  }
-
-  Future<List<String>> getAll() async {
-    final sql = '''SELECT * FROM ${DBCreator.subTable}''';
-    final data = await db.rawQuery(sql);
-    List<String> list = List();
-    for (var elem in data) {
-      list.add(elem["name"]);
-    }
-    logger.i("DB: get all");
-    return list;
-  }
-
-  Future<void> delete(String name) async {
-    final sql =
-        '''DELETE FROM ${DBCreator.subTable} WHERE ${DBCreator.name} = $name''';
-    await db.rawDelete(sql);
-    logger.i("DB: deleted $name");
-  }
-
-  Future<void> deleteAll() async {
-    final sql = '''DELETE FROM ${DBCreator.subTable}''';
-    await db.rawDelete(sql);
-    logger.i("DB: deleted all types");
   }
 }

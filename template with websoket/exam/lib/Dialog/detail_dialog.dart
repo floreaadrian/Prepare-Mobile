@@ -14,7 +14,7 @@ Future<void> asyncDetailsDialog(BuildContext context, Item item) async {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
             Text("Id: " + item.id.toString()),
-            Text("Name: " + item.name),
+            Text("Details: " + item.details),
           ],
         ),
         actions: <Widget>[

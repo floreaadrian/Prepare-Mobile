@@ -1,14 +1,16 @@
+import 'package:exam/Dialog/string_dialog.dart';
+import 'package:exam/Models/item.dart';
 import 'package:exam/Providers/screen2_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class ItemScreen2Widget extends StatefulWidget {
-  final String name;
+  final Item item;
   final GlobalKey<ScaffoldState> scaffoldKey;
 
   const ItemScreen2Widget({
     Key key,
-    @required this.name,
+    @required this.item,
     @required this.scaffoldKey,
   }) : super(key: key);
 
@@ -17,29 +19,33 @@ class ItemScreen2Widget extends StatefulWidget {
 }
 
 class _ItemScreen2WidgetState extends State<ItemScreen2Widget> {
-  Widget addItemToLocal(BuildContext context) {
+  Widget changeStatus(BuildContext context) {
     return IconButton(
-      icon: Icon(Icons.add),
+      icon: Icon(Icons.change_history),
       onPressed: () async {
         final provider = Provider.of<Screen2Provider>(context, listen: false);
-        String response = await provider.addName(widget.name);
-        var snackbar = new SnackBar(content: new Text(response));
-        widget.scaffoldKey.currentState.showSnackBar(snackbar);
+        String newStatus = await stringItemDialog(context, "Status");
+        if (newStatus != null && newStatus != "") {
+          String response =
+              await provider.changeStatus(widget.item.id, newStatus);
+          var snackbar = new SnackBar(content: new Text(response));
+          widget.scaffoldKey.currentState.showSnackBar(snackbar);
+        }
       },
     );
   }
 
-  Widget deleteItem(BuildContext context) {
-    return IconButton(
-      icon: Icon(Icons.delete),
-      onPressed: () async {
-        final provider = Provider.of<Screen2Provider>(context, listen: false);
-        String response = await provider.deleteName(widget.name);
-        var snackbar = new SnackBar(content: new Text(response));
-        widget.scaffoldKey.currentState.showSnackBar(snackbar);
-      },
-    );
-  }
+  // Widget deleteItem(BuildContext context) {
+  //   return IconButton(
+  //     icon: Icon(Icons.delete),
+  //     onPressed: () async {
+  //       final provider = Provider.of<Screen2Provider>(context, listen: false);
+  //       String response = await provider.deleteName(widget.name);
+  //       var snackbar = new SnackBar(content: new Text(response));
+  //       widget.scaffoldKey.currentState.showSnackBar(snackbar);
+  //     },
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -54,11 +60,20 @@ class _ItemScreen2WidgetState extends State<ItemScreen2Widget> {
               // crossAxisAlignment: CrossAxisAlignment.stretch,
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
-                Text("Name: " + widget.name, style: TextStyle(fontSize: 20)),
+                Text("Id: " + widget.item.id.toString(),
+                    style: TextStyle(fontSize: 20)),
+                Text("Details: " + widget.item.details,
+                    style: TextStyle(fontSize: 20)),
+                Text("Status: " + widget.item.status,
+                    style: TextStyle(fontSize: 20)),
+                Text("User: " + widget.item.user.toString(),
+                    style: TextStyle(fontSize: 20)),
+                Text("Age: " + widget.item.age.toString(),
+                    style: TextStyle(fontSize: 20)),
               ],
             ),
           ),
-          deleteItem(context),
+          changeStatus(context),
         ],
       ),
     );

@@ -25,12 +25,16 @@ class OurDrawer extends StatelessWidget {
             ),
           ),
           ListTile(
-            title: Text("Screen 1"),
+            title: Text("Client section"),
             onTap: () => Navigator.pushReplacementNamed(context, SCREEN_1),
           ),
           ListTile(
-            title: Text("Screen 2"),
+            title: Text("Store section"),
             onTap: () => Navigator.pushReplacementNamed(context, SCREEN_2),
+          ),
+          ListTile(
+            title: Text("Management section"),
+            onTap: () => Navigator.pushReplacementNamed(context, SCREEN_3),
           ),
         ],
       ),

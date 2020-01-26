@@ -18,30 +18,6 @@ class ItemScreen1Widget extends StatefulWidget {
 }
 
 class _ItemScreen1WidgetState extends State<ItemScreen1Widget> {
-  Widget addItemToLocal(BuildContext context) {
-    return IconButton(
-      icon: Icon(Icons.add),
-      onPressed: () async {
-        final provider = Provider.of<Screen1Provider>(context, listen: false);
-        String response = await provider.addItem(widget.item);
-        var snackbar = new SnackBar(content: new Text(response));
-        widget.scaffoldKey.currentState.showSnackBar(snackbar);
-      },
-    );
-  }
-
-  Widget deleteItem(BuildContext context) {
-    return IconButton(
-      icon: Icon(Icons.delete),
-      onPressed: () async {
-        final provider = Provider.of<Screen1Provider>(context, listen: false);
-        String response = await provider.deleteItem(widget.item);
-        var snackbar = new SnackBar(content: new Text(response));
-        widget.scaffoldKey.currentState.showSnackBar(snackbar);
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -54,12 +30,17 @@ class _ItemScreen1WidgetState extends State<ItemScreen1Widget> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
-                Text("Name: " + widget.item.name,
+                Text("Id: " + widget.item.id.toString(),
+                    style: TextStyle(fontSize: 20)),
+                Text("Details: " + widget.item.details,
+                    style: TextStyle(fontSize: 20)),
+                Text("Status: " + widget.item.status,
+                    style: TextStyle(fontSize: 20)),
+                Text("Age: " + widget.item.age.toString(),
                     style: TextStyle(fontSize: 20)),
               ],
             ),
           ),
-          deleteItem(context),
         ],
       ),
     );

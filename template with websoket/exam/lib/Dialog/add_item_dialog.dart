@@ -1,14 +1,16 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 Future<Map<String, dynamic>> addItemDialog({
   BuildContext context,
 }) async {
   final _textKey = GlobalKey<FormState>();
-  TextEditingController _nameController = TextEditingController();
-  TextEditingController _descController = TextEditingController();
-  TextEditingController _sizeController = TextEditingController();
+  TextEditingController _detailsController = TextEditingController();
+  TextEditingController _statusController = TextEditingController();
+  TextEditingController _ageController = TextEditingController();
+  TextEditingController _typeController = TextEditingController();
 
   return showDialog<Map<String, dynamic>>(
       context: context,
@@ -24,21 +26,28 @@ Future<Map<String, dynamic>> addItemDialog({
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
                   TextFormField(
-                      decoration: new InputDecoration(labelText: 'Name'),
-                      controller: _nameController,
+                      decoration: new InputDecoration(labelText: 'Details'),
+                      controller: _detailsController,
                       textInputAction: Platform.isAndroid
                           ? TextInputAction.next
                           : TextInputAction.continueAction),
                   TextFormField(
-                    decoration: new InputDecoration(labelText: 'Desc'),
-                    controller: _descController,
+                    decoration: new InputDecoration(labelText: 'Status'),
+                    controller: _statusController,
                     textInputAction: Platform.isAndroid
                         ? TextInputAction.next
                         : TextInputAction.continueAction,
                   ),
                   TextFormField(
-                    decoration: new InputDecoration(labelText: 'Size'),
-                    controller: _sizeController,
+                    decoration: new InputDecoration(labelText: 'Age'),
+                    controller: _ageController,
+                    textInputAction: Platform.isAndroid
+                        ? TextInputAction.next
+                        : TextInputAction.continueAction,
+                  ),
+                  TextFormField(
+                    decoration: new InputDecoration(labelText: 'Type'),
+                    controller: _typeController,
                   ),
                 ],
               ),
@@ -47,12 +56,16 @@ Future<Map<String, dynamic>> addItemDialog({
           actions: <Widget>[
             new FlatButton(
               child: new Text("Add"),
-              onPressed: () {
+              onPressed: () async {
+                SharedPreferences prefs = await SharedPreferences.getInstance();
+                int userId = prefs.getInt("user");
                 Map<String, dynamic> inputData = {
                   "id": -1,
-                  "name": _nameController.text,
-                  "desc": _descController.text,
-                  "size": int.parse(_sizeController.text),
+                  "details": _detailsController.text,
+                  "age": int.parse(_ageController.text),
+                  "status": _statusController.text,
+                  "type": _typeController.text,
+                  "user": userId,
                 };
                 Navigator.of(context).pop(inputData);
               },

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:exam/Models/user.dart';
 import 'package:exam/Repository/screen2_rep.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -12,12 +13,12 @@ class Screen2Provider extends ChangeNotifier {
   bool isOnline = true;
   bool modified = true;
   bool fromServer = true;
-  List<String> localItems = [];
+  List<Item> localItems = [];
 
-  Future<List<String>> getItems() async {
+  Future<List<Item>> getItems() async {
     logger.i("Provider: Retreiving...");
     if (localItems.length > 0 && !modified) return localItems;
-    if (isOnline) localItems = await rep.getAllNames();
+    if (isOnline) localItems = await rep.getAllItems();
     return localItems;
   }
 
@@ -30,34 +31,18 @@ class Screen2Provider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<String> deleteName(String name) async {
-    logger.i("Provider: Deleting...");
-    String response = await rep.deleteItem(name);
-    notifyListeners();
-    return response;
-  }
-
-  Future<dynamic> addName(String name) async {
-    logger.i("Provider: Adding...");
-    dynamic added = await rep.addItem(name);
-    notifyListeners();
-    return added;
-  }
-
   void refresh() {
     fromServer = true;
     notifyListeners();
   }
 
-  Future<void> deleteItemLocal(String item) async {
-    localItems.remove(item);
-    modified = false;
+  Future<String> changeStatus(int id, String newStatus) async {
+    String response = await rep.changeStatus(id, newStatus);
     notifyListeners();
+    return response;
   }
 
-  Future<void> addItemLocal(String item) async {
-    localItems.add(item);
-    modified = false;
-    notifyListeners();
+  Future<List<User>> getAllUsers() {
+    return rep.getAllUsers();
   }
 }

@@ -5,8 +5,11 @@ import 'package:exam/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-void main() {
-  //await DBCreator().initDB(); TODO: uncomment if using Database
+import 'db_creator.dart';
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await DBCreator().initDB();
   runApp(
     MultiProvider(
       providers: [

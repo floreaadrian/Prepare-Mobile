@@ -5,20 +5,19 @@ import 'package:exam/Dialog/add_item_dialog.dart';
 import 'package:exam/Models/item.dart';
 import 'package:exam/Providers/screen1_provider.dart';
 import 'package:exam/Providers/screen2_provider.dart';
-import 'package:exam/Widgets/item_screen2_widget.dart';
 import 'package:exam/drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:web_socket_channel/io.dart';
 
-class Screen2 extends StatefulWidget {
-  Screen2({Key key}) : super(key: key);
+class Screen3 extends StatefulWidget {
+  Screen3({Key key}) : super(key: key);
 
   @override
-  _Screen2State createState() => _Screen2State();
+  _Screen3State createState() => _Screen3State();
 }
 
-class _Screen2State extends State<Screen2> {
+class _Screen3State extends State<Screen3> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   var connectivity;
   var wbsoket;
@@ -84,7 +83,7 @@ class _Screen2State extends State<Screen2> {
       drawer: OurDrawer(),
       key: _scaffoldKey,
       appBar: AppBar(
-        title: Text("Store section"),
+        title: Text("Management section"),
       ),
       body: provider.isOnline
           ? itemList(context)
@@ -97,16 +96,17 @@ class _Screen2State extends State<Screen2> {
   Widget itemList(BuildContext context) {
     final provider = Provider.of<Screen2Provider>(context, listen: true);
     return FutureBuilder(
-      future: provider.getItems(),
+      future: provider.getAllUsers(),
       builder: (context, itemsSnap) {
         if (itemsSnap.connectionState == ConnectionState.done) {
           if (itemsSnap.data == null) return Container();
           return ListView.builder(
             itemCount: itemsSnap.data.length,
             itemBuilder: (context, index) {
-              return ItemScreen2Widget(
-                item: itemsSnap.data[index],
-                scaffoldKey: _scaffoldKey,
+              return ListTile(
+                title: Text("Id: " + itemsSnap.data[index].id.toString()),
+                subtitle:
+                    Text("Orders: " + itemsSnap.data[index].orders.toString()),
               );
             },
           );

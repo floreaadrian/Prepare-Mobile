@@ -1,5 +1,6 @@
 import 'package:exam/Screens/screen1.dart';
 import 'package:exam/Screens/screen2.dart';
+import 'package:exam/Screens/screen3.dart';
 import 'package:flutter/material.dart';
 
 const String DEFAULT_ROUTE = '/';
@@ -16,6 +17,8 @@ class Router {
         return MaterialPageRoute(builder: (_) => Screen1());
       case SCREEN_2:
         return MaterialPageRoute(builder: (_) => Screen2());
+      case SCREEN_3:
+        return MaterialPageRoute(builder: (_) => Screen3());
       default:
         return MaterialPageRoute(
             builder: (_) => Scaffold(

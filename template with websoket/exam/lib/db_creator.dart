@@ -10,28 +10,29 @@ class DBCreator {
   static const itemTable = 'itemTable';
   static const subTable = 'subTable';
   static const id = 'id';
-  static const String name = 'name';
-  static const String desc = 'desc';
-  static const String size = 'size';
+  static const String details = 'details';
+  static const String status = 'status';
+  static const String user = 'user';
+  static const String age = 'age';
+  static const String type = 'type';
 
   Future<void> createItemTable(Database db) async {
-    //TODO: Edit table for item
     final createSql = '''CREATE TABLE $itemTable 
     (
       $id INTEGER PRIMARY KEY AUTOINCREMENT,
-      $name VARCHAR(64),
-      $desc VARCHAR(128),
-      $size INTEGER
+      $details VARCHAR(64),
+      $status VARCHAR(128),
+      $user INTEGER,
+      $age INTEGER,
+      $type VARCHAR(128)
     )''';
     await db.execute(createSql);
   }
 
-  Future<void> createTable(Database db) async {
-    //TODO: edit table for part of item
-    final createSql = '''CREATE TABLE $subTable
+  Future<void> creteIdTable(Database db) async {
+    final createSql = '''CREATE TABLE $subTable 
     (
-      $id INTEGER PRIMARY KEY AUTOINCREMENT,
-      $name VARCHAR(64)
+      $user INTEGER PRIMARY KEY AUTOINCREMENT,
     )''';
     await db.execute(createSql);
   }
@@ -54,6 +55,6 @@ class DBCreator {
 
   Future<void> onCreate(Database db, int version) async {
     await createItemTable(db);
-    await createTable(db);
+    await creteIdTable(db);
   }
 }

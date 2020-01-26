@@ -1,7 +1,10 @@
+import 'dart:convert';
+
 import 'package:connectivity/connectivity.dart';
 import 'package:exam/Dialog/add_item_dialog.dart';
 import 'package:exam/Models/item.dart';
 import 'package:exam/Providers/screen1_provider.dart';
+import 'package:exam/Providers/screen2_provider.dart';
 import 'package:exam/Widgets/item_screen1_widget.dart';
 import 'package:exam/drawer.dart';
 import 'package:flutter/material.dart';
@@ -22,26 +25,55 @@ class _Screen1State extends State<Screen1> {
   @override
   void initState() {
     final provider = Provider.of<Screen1Provider>(context, listen: false);
+    final provider2 = Provider.of<Screen2Provider>(context, listen: false);
     super.initState();
-    // if (provider.isOnline)
-    //   wbsoket =
-    //       IOWebSocketChannel.connect("ws://10.0.2.2:4001") //TODO:CHANGE PORT
-    //         ..stream.listen((message) {
-    //           // provider.addGameLocally(Game.fromJson(jsonDecode(message)));
-    //         });
+    if (provider.isOnline)
+      try {
+        wbsoket =
+            IOWebSocketChannel.connect("ws://10.0.2.2:2302") //TODO:CHANGE PORT
+              ..stream.listen((message) {
+                var item = Item.fromJson(jsonDecode(message));
+                var snackbar = new SnackBar(
+                    content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Text("Id: " + item.id.toString()),
+                    Text("Details: " + item.details),
+                    Text("Status: " + item.status),
+                    Text("User: " + item.user.toString()),
+                    Text("Age: " + item.age.toString()),
+                  ],
+                ));
+                _scaffoldKey.currentState.showSnackBar(snackbar);
+              });
+      } catch (e) {}
     connectivity = Connectivity()
         .onConnectivityChanged
         .listen((ConnectivityResult result) {
       if (result == ConnectivityResult.none) {
         if (wbsoket is IOWebSocketChannel) wbsoket.sink.close();
         provider.changeInternetStatus(false);
+        provider2.changeInternetStatus(false);
       } else {
-        // wbsoket =
-        // IOWebSocketChannel.connect("ws://10.0.2.2:4001") //TODO:CHANGE PORT
-        //   ..stream.listen((message) {
-        //     // provider.addGameLocally(Game.fromJson(jsonDecode(message)));
-        //   });
+        wbsoket =
+            IOWebSocketChannel.connect("ws://10.0.2.2:2302") //TODO:CHANGE PORT
+              ..stream.listen((message) {
+                var item = Item.fromJson(jsonDecode(message));
+                var snackbar = new SnackBar(
+                    content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Text("Id: " + item.id.toString()),
+                    Text("Details: " + item.details),
+                    Text("Status: " + item.status),
+                    Text("User: " + item.user.toString()),
+                    Text("Age: " + item.age.toString()),
+                  ],
+                ));
+                _scaffoldKey.currentState.showSnackBar(snackbar);
+              });
         provider.changeInternetStatus(true);
+        provider2.changeInternetStatus(true);
       }
     });
   }
@@ -53,7 +85,7 @@ class _Screen1State extends State<Screen1> {
       drawer: OurDrawer(),
       key: _scaffoldKey,
       appBar: AppBar(
-        title: Text("Screen1"),
+        title: Text("Client section"),
         actions: <Widget>[
           RaisedButton(
             onPressed: () {
@@ -64,18 +96,13 @@ class _Screen1State extends State<Screen1> {
           ),
           RaisedButton(
             onPressed: () async {
-              if (provider.isOnline) {
-                final data = await addItemDialog(context: context);
-                if (data != null) {
-                  dynamic result = await provider.addItem(Item.fromJson(data));
-                  if (result is String) {
-                    _scaffoldKey.currentState
-                        .showSnackBar(SnackBar(content: new Text(result)));
-                  }
+              final data = await addItemDialog(context: context);
+              if (data != null) {
+                String result = await provider.addItem(Item.fromJson(data));
+                if (result != "") {
+                  _scaffoldKey.currentState
+                      .showSnackBar(SnackBar(content: new Text(result)));
                 }
-              } else {
-                _scaffoldKey.currentState.showSnackBar(
-                    SnackBar(content: new Text("No internet connection")));
               }
             },
             child: Icon(Icons.add),
@@ -89,6 +116,10 @@ class _Screen1State extends State<Screen1> {
 
   Widget itemList(BuildContext context) {
     final provider = Provider.of<Screen1Provider>(context, listen: true);
+    // if (!provider.isOnline) {
+    //   var snackbar = new SnackBar(content: new Text("You are offline"));
+    //   _scaffoldKey.currentState.showSnackBar(snackbar);
+    // }
     return FutureBuilder(
       future: provider.getItems(),
       builder: (context, itemsSnap) {

@@ -1,26 +1,34 @@
 class Item {
   final int id;
-  final String name;
-  final String desc;
-  final int size;
+  final String details;
+  final String status;
+  final int user;
+  final int age;
+  final String type;
 
   Item({
     this.id,
-    this.name,
-    this.desc,
-    this.size,
+    this.details,
+    this.status,
+    this.user,
+    this.age,
+    this.type,
   });
 
   Item.fromJson(Map<String, dynamic> json)
       : id = json["id"],
-        name = json["name"],
-        desc = json["desc"],
-        size = json["size"];
+        details = json["details"],
+        status = json["status"],
+        user = json["user"],
+        age = json["age"],
+        type = json["type"];
 
   Map<String, dynamic> toJson() => {
         'id': id,
-        'name': name,
-        'desc': desc,
-        'size': size,
+        'details': details,
+        'status': status,
+        'user': user,
+        'age': age,
+        'type': type,
       };
 }
